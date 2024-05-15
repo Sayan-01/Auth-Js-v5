@@ -9,20 +9,21 @@ import { Card, CardContent } from "../ui/card";
 import { BsExclamationTriangle } from "react-icons/bs";
 
 const RegisterForm = () => {
-  const [error, setError] = useState('');
-    const [succes, setSucces] = useState('');
-
+  const [error, setError] = useState("");
 
   const router = useRouter();
   const registerHandler = async (formData) => {
     const name = await formData.get("name");
     const email = await formData.get("email");
     const password = await formData.get("password");
-    if (!name || !email || !password) throw new Error("fill all filed");
+    if (!name || !email || !password) setError("Filled all details");
     let res = await fetch("/api/register", {
       method: "POST",
       body: JSON.stringify({ name, email, password }),
     });
+    console.log(res.status, res);
+
+    if (res.ok === false) setError("User alredy exist");
     if (res.ok) router.push("/auth/login");
   };
   return (
@@ -58,18 +59,12 @@ const RegisterForm = () => {
             ></Input>
             {error ? (
               <div className="mt-6 bg-destructive/15 px-3 py-2 border-destructive/30 border-2 rounded-lg flex items-center gap-x-2 text-sm text-destructive">
-                <BsExclamationTriangle className=" h-4 w-4" /> dhfgsdhfgjshfh
+                <BsExclamationTriangle className=" h-4 w-4" /> {error}
               </div>
             ) : (
               ""
             )}
-            {succes ? (
-              <div className=" bg-emerald-600/15 px-3 py-2 border-green-500/40 border-2 rounded-lg flex items-center gap-x-2 text-sm text-green-500">
-                <FaCheck className=" h-4 w-4" /> Account Created
-              </div>
-            ) : (
-              ""
-            )}
+
             <Button
               size="lg"
               type="submit"
